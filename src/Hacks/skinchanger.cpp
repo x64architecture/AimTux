@@ -210,7 +210,7 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 
 		static ClientClass* pClass;
 
-		if(!entitylist->GetClientEntity(wearables[0] + 0xFFF))
+		if(!entitylist->GetClientEntity(wearables[0] & 0xFFF))
 		{
 			for (pClass = client->GetAllClasses(); pClass; pClass = pClass->m_pNext)
 			{
