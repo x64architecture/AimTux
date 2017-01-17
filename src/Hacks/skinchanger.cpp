@@ -1,6 +1,7 @@
 #include "skinchanger.h"
 
 #define MakePtr(cast, ptr, addValue) (cast)( (unsigned long)(ptr) + (unsigned long)(addValue))
+bool runOnce = true;
 
 bool Settings::Skinchanger::enabled = false;
 std::unordered_map<int, Settings::Skinchanger::Skin> Settings::Skinchanger::skins = {
@@ -208,38 +209,43 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 		if (!wearables)
 			return;
 
-		static ClientClass* pClass;
-
-		if (!pClass)
-			pClass = client->GetAllClasses();
-		while (pClass)
+		if(runOnce)
 		{
-			if (pClass->m_ClassID == CEconWearable)
-				break;
-			pClass = pClass->m_pNext;
-		}
 
-		int iEntry, iSerial;
+			static ClientClass* pClass;
 
-		pClass->m_pCreateFn(iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = (RandomInt(0x0, 0xFFF)));
-		wearables[0] = iEntry | (iSerial << 16);
+			if (!pClass)
+				pClass = client->GetAllClasses();
+			while (pClass)
+			{
+				if (pClass->m_ClassID == CEconWearable)
+					break;
+				pClass = pClass->m_pNext;
+			}
 
-		C_BaseEntity* gloves = entitylist->GetClientEntity(wearables[0] & 0xFFF);
+			int iEntry, iSerial;
 
-		IEngineClient::player_info_t localplayer_info;
+			pClass->m_pCreateFn(iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = (RandomInt(0x0, 0xFFF)));
+			wearables[0] = iEntry | (iSerial << 16);
 
-		if (gloves)
-		{
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemDefinitionIndex) = 5033;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemIDHigh) = -1;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iEntityQuality) = 4;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iAccountID) = localplayer_info.xuidlow;
-			*MakePtr(float*, gloves, offsets.DT_BaseAttributableItem.m_flFallbackWear) = 0.00000001f;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackSeed) = 0;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackStatTrak) = -1;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackPaintKit) = 10026;
-			gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
-			gloves->PreDataUpdate(DATA_UPDATE_CREATED);
+			C_BaseEntity* gloves = entitylist->GetClientEntity(wearables[0] & 0xFFF);
+
+			IEngineClient::player_info_t localplayer_info;
+
+			if (gloves)
+			{
+				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemDefinitionIndex) = 5033;
+				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemIDHigh) = -1;
+				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iEntityQuality) = 4;
+				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iAccountID) = localplayer_info.xuidlow;
+				*MakePtr(float*, gloves, offsets.DT_BaseAttributableItem.m_flFallbackWear) = 0.00000001f;
+				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackSeed) = 0;
+				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackStatTrak) = -1;
+				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackPaintKit) = 10026;
+				gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
+				gloves->PreDataUpdate(DATA_UPDATE_CREATED);
+			}
+			runOnce = false;
 		}
 	}
 
