@@ -210,35 +210,36 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 
 		static ClientClass* pClass;
 
-		if(!entitylist->GetClientEntity(wearables[0] & 0xFFF))
+		if (!pClass)
+			pClass = client->GetAllClasses();
+		while (pClass)
 		{
-			for (pClass = client->GetAllClasses(); pClass; pClass = pClass->m_pNext)
-			{
-				if(pClass->m_ClassID == CEconWearable)
-					continue;
-			}
+			if (pClass->m_ClassID == CEconWearable)
+				break;
+			pClass = pClass->m_pNext;
+		}
 
-			int iEntry, iSerial;
+		int iEntry, iSerial;
 
-			pClass->m_pCreateFn(iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = (RandomInt(0x0, 0xFFF)));
-			wearables[0] = iEntry | (iSerial << 16);
+		pClass->m_pCreateFn(iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = (RandomInt(0x0, 0xFFF)));
+		wearables[0] = iEntry | (iSerial << 16);
 
-			C_BaseEntity* gloves = (C_BaseAttributableItem*)entitylist->GetClientEntity(wearables[0]);
+		C_BaseEntity* gloves = entitylist->GetClientEntity(wearables[0] & 0xFFF);
 
-			IEngineClient::player_info_t localplayer_info;
-			if (gloves)
-			{
-				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemDefinitionIndex) = 5033;
-				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemIDHigh) = -1;
-				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iEntityQuality) = 4;
-				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iAccountID) = localplayer_info.xuidlow;
-				*MakePtr(float*, gloves, offsets.DT_BaseAttributableItem.m_flFallbackWear) = 0.00000001f;
-				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackSeed) = 0;
-				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackStatTrak) = -1;
-				*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackPaintKit) = 10026;
-				gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
-				gloves->PreDataUpdate(DATA_UPDATE_CREATED);
-			}
+		IEngineClient::player_info_t localplayer_info;
+
+		if (gloves)
+		{
+			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemDefinitionIndex) = 5033;
+			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemIDHigh) = -1;
+			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iEntityQuality) = 4;
+			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iAccountID) = localplayer_info.xuidlow;
+			*MakePtr(float*, gloves, offsets.DT_BaseAttributableItem.m_flFallbackWear) = 0.00000001f;
+			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackSeed) = 0;
+			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackStatTrak) = -1;
+			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackPaintKit) = 10026;
+			gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
+			gloves->PreDataUpdate(DATA_UPDATE_CREATED);
 		}
 	}
 
