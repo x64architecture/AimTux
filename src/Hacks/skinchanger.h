@@ -12,6 +12,7 @@ namespace SkinChanger
 	extern bool ForceFullUpdate;
 
 	void FrameStageNotify(ClientFrameStage_t stage);
+	void FrameStageNotifyWearables(ClientFrameStage_t stage);
 	void FireEventClientSide(IGameEvent* event);
 	void SetViewModelSequence(const CRecvProxyData *pDataConst, void *pStruct, void *pOut);
 	void HookCBaseViewModel();

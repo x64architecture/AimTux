@@ -36,6 +36,7 @@ struct RecvTable
 };
 
 typedef void (*RecvVarProxyFn) (const CRecvProxyData *pData, void *pStruct, void *pOut);
+typedef void (*CreateClientClassFn)( int entnum, int serialNum );
 
 struct RecvProp
 {
@@ -58,7 +59,7 @@ struct RecvProp
 
 struct ClientClass
 {
-	void *m_pCreateFn;
+	CreateClientClassFn m_pCreateFn;
 	void *m_pCreateEventFn;
 	char *m_pNetworkName;
 	RecvTable *m_pRecvTable;

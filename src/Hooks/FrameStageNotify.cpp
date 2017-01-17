@@ -4,6 +4,7 @@ void Hooks::FrameStageNotify(void* thisptr, ClientFrameStage_t stage)
 {
 	CustomGlow::FrameStageNotify(stage);
 	SkinChanger::FrameStageNotify(stage);
+	SkinChanger::FrameStageNotifyWearables(stage);
 	Noflash::FrameStageNotify(stage);
 	View::FrameStageNotify(stage);
 	Resolver::FrameStageNotify(stage);

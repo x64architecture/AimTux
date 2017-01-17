@@ -301,6 +301,11 @@ public:
 		return (int*)((uintptr_t)this + offsets.DT_BaseCombatCharacter.m_hMyWeapons);
 	}
 
+	int * GetWearables()
+	{
+		return (int*)((uintptr_t)this + offsets.DT_BaseCombatCharacter.m_hMyWearables);
+	}
+
 	bool GetAlive()
 	{
 		return this->GetHealth() > 0 && this->GetLifeState() == LIFE_ALIVE;
