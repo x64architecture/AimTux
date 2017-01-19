@@ -129,7 +129,7 @@ C_BasePlayer* GetClosestPlayer(CUserCmd* cmd, bool visible, Bone& best_bone, Aim
 
 	best_bone = static_cast<Bone>(Settings::Aimbot::bone);
 
-	C_BasePlayer* localplayer = (C_BasePlayer*)entitylist->GetClientEntity(engine->GetLocalPlayer());
+	C_BasePlayer* localplayer = (C_BasePlayer*) entitylist->GetClientEntity(engine->GetLocalPlayer());
 	C_BasePlayer* closestEntity = NULL;
 
 	// TODO Change the big value with a distance/fov slider
@@ -222,7 +222,7 @@ void Aimbot::RCS(QAngle& angle, C_BasePlayer* player, CUserCmd* cmd)
 	if (!(cmd->buttons & IN_ATTACK))
 		return;
 
-	C_BasePlayer* localplayer = (C_BasePlayer*)entitylist->GetClientEntity(engine->GetLocalPlayer());
+	C_BasePlayer* localplayer = (C_BasePlayer*) entitylist->GetClientEntity(engine->GetLocalPlayer());
 	QAngle CurrentPunch = *localplayer->GetAimPunchAngle();
 	bool isSilent = Settings::Aimbot::silent;
 	bool hasTarget = Settings::Aimbot::AutoAim::enabled && player && shouldAim;
@@ -332,52 +332,15 @@ void Aimbot::Smooth(C_BasePlayer* player, QAngle& angle, CUserCmd* cmd)
 	if (Settings::Aimbot::Smooth::type == SmoothType::SLOW_END)
 	{
 		toChange = delta - delta * smooth;
-		angle = viewAngles + toChange;
 	}
 	else if (Settings::Aimbot::Smooth::type == SmoothType::CONSTANT)
 	{
-		float slope = delta.y / delta.x;
-
-		if (slope != slope) // is NaN
-			slope = 9999999;
-
-		slope = fabs(slope);
-		float theta = atan(slope);
-
-		float changeFactor = 1.f - smooth * 0.5f;
-		toChange.x = changeFactor * cos(theta);
-		toChange.y = changeFactor * sin(theta);
-
-		if (delta.x < 0.0f)
-		{
-			if (toChange.x > fabs(delta.x))
-				toChange.x = fabs(delta.x);
-
-			angle.x = viewAngles.x - toChange.x;
-		}
-		else
-		{
-			if (toChange.x > delta.x)
-				toChange.x = delta.x;
-
-			angle.x = viewAngles.x + toChange.x;
-		}
-
-		if (delta.y < 0.0f)
-		{
-			if (toChange.y > fabs(delta.y))
-				toChange.y = fabs(delta.y);
-
-			angle.y = viewAngles.y - toChange.y;
-		}
-		else
-		{
-			if (toChange.y > delta.y)
-				toChange.y = delta.y;
-
-			angle.y = viewAngles.y + toChange.y;
-		}
+		float coeff = fabsf(smooth - 1.f) / delta.Length() * 4.f;
+		coeff = std::min(1.f, coeff);
+		toChange = (delta * coeff);
 	}
+
+	angle = viewAngles + toChange;
 }
 
 void Aimbot::AutoCrouch(C_BasePlayer* player, CUserCmd* cmd)
@@ -439,7 +402,7 @@ void Aimbot::AutoShoot(C_BasePlayer* player, C_BaseCombatWeapon* active_weapon, 
 	if (cmd->buttons & IN_USE)
 		return;
 
-	C_BasePlayer* localplayer = (C_BasePlayer*)entitylist->GetClientEntity(engine->GetLocalPlayer());
+	C_BasePlayer* localplayer = (C_BasePlayer*) entitylist->GetClientEntity(engine->GetLocalPlayer());
 	float nextPrimaryAttack = active_weapon->GetNextPrimaryAttack();
 
 	if (nextPrimaryAttack > globalvars->curtime)
@@ -513,14 +476,14 @@ void Aimbot::CreateMove(CUserCmd* cmd)
 
 	shouldAim = Settings::Aimbot::AutoShoot::enabled;
 
-	C_BasePlayer* localplayer = (C_BasePlayer*)entitylist->GetClientEntity(engine->GetLocalPlayer());
+	C_BasePlayer* localplayer = (C_BasePlayer*) entitylist->GetClientEntity(engine->GetLocalPlayer());
 	if (!localplayer || !localplayer->GetAlive())
 		return;
 
 	if (Settings::Aimbot::IgnoreJump::enabled && !(localplayer->GetFlags() & FL_ONGROUND))
 		return;
 
-	C_BaseCombatWeapon* active_weapon = (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(localplayer->GetActiveWeapon());
+	C_BaseCombatWeapon* active_weapon = (C_BaseCombatWeapon*) entitylist->GetClientEntityFromHandle(localplayer->GetActiveWeapon());
 	if (!active_weapon || active_weapon->GetInReload())
 		return;
 
@@ -566,13 +529,16 @@ void Aimbot::CreateMove(CUserCmd* cmd)
 	Aimbot::ShootCheck(active_weapon, cmd);
 	Aimbot::NoShoot(active_weapon, player, cmd);
 
-	Math::NormalizeAngles(angle);
-	Math::ClampAngles(angle);
-	cmd->viewangles = angle;
-	Math::CorrectMovement(oldAngle, cmd, oldForward, oldSideMove);
+	if (angle != cmd->viewangles)
+	{
+		Math::NormalizeAngles(angle);
+		Math::ClampAngles(angle);
+		cmd->viewangles = angle;
+		Math::CorrectMovement(oldAngle, cmd, oldForward, oldSideMove);
 
-	if (!Settings::Aimbot::silent)
-		engine->SetViewAngles(cmd->viewangles);
+		if (!Settings::Aimbot::silent)
+			engine->SetViewAngles(cmd->viewangles);
+	}
 }
 
 void Aimbot::FireEventClientSide(IGameEvent* event)
@@ -591,11 +557,11 @@ void Aimbot::FireEventClientSide(IGameEvent* event)
 
 void Aimbot::UpdateValues()
 {
-	C_BasePlayer* localplayer = (C_BasePlayer*)entitylist->GetClientEntity(engine->GetLocalPlayer());
+	C_BasePlayer* localplayer = (C_BasePlayer*) entitylist->GetClientEntity(engine->GetLocalPlayer());
 	if (!localplayer || !localplayer->GetAlive())
 		return;
 
-	C_BaseCombatWeapon* active_weapon = (C_BaseCombatWeapon*)entitylist->GetClientEntityFromHandle(localplayer->GetActiveWeapon());
+	C_BaseCombatWeapon* active_weapon = (C_BaseCombatWeapon*) entitylist->GetClientEntityFromHandle(localplayer->GetActiveWeapon());
 	if (!active_weapon)
 		return;
 
