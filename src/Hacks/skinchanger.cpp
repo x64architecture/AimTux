@@ -185,7 +185,10 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 
 	if (SkinChanger::ForceFullUpdate)
 	{
-		::ForceFullUpdate(GetClientState());
+		//::ForceFullUpdate(GetClientState());
+		cvar->FindVar("cl_fullupdate")->nFlags &= ~FCVAR_CHEAT;
+		engine->ExecuteClientCmd("cl_fullupdate");
+		cvar->FindVar("cl_fullupdate")->nFlags |= FCVAR_CHEAT;
 		SkinChanger::ForceFullUpdate = false;
 	}
 }
