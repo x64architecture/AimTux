@@ -30,6 +30,7 @@ struct COffsets
 		std::ptrdiff_t m_MoveType;
 		std::ptrdiff_t m_Collision;
 		std::ptrdiff_t m_bSpotted;
+		std::ptrdiff_t m_nModelIndex;
 	} DT_BaseEntity;
 
 	struct
@@ -130,7 +131,6 @@ struct COffsets
 
 	struct
 	{
-		std::ptrdiff_t m_nModelIndex;
 		std::ptrdiff_t m_hWeapon;
 		std::ptrdiff_t m_hOwner;
 	} DT_BaseViewModel;
@@ -161,6 +161,7 @@ struct COffsets
 		std::ptrdiff_t m_hOwner;
 		std::ptrdiff_t m_iClip1;
 		std::ptrdiff_t m_bInReload;
+		std::ptrdiff_t m_iViewModelIndex;
 	} DT_BaseCombatWeapon;
 
 	struct

@@ -27,6 +27,7 @@ void Offsets::getOffsets()
 	offsets.DT_BaseEntity.m_MoveType = offsets.DT_BaseEntity.m_nRenderMode + 1;
 	offsets.DT_BaseEntity.m_Collision = NetVarManager::getOffset(tables, "DT_BaseEntity", "m_Collision");
 	offsets.DT_BaseEntity.m_bSpotted = NetVarManager::getOffset(tables, "DT_BaseEntity", "m_bSpotted");
+	offsets.DT_BaseEntity.m_nModelIndex = NetVarManager::getOffset(tables, "DT_BaseEntity", "m_nModelIndex");
 
 	offsets.DT_BaseCombatCharacter.m_hActiveWeapon = NetVarManager::getOffset(tables, "DT_BaseCombatCharacter", "m_hActiveWeapon");
 	offsets.DT_BaseCombatCharacter.m_hMyWeapons = NetVarManager::getOffset(tables, "DT_BaseCombatCharacter", "m_hMyWeapons") / 2;
@@ -108,7 +109,6 @@ void Offsets::getOffsets()
 	offsets.DT_BaseAttributableItem.m_flFallbackWear = NetVarManager::getOffset(tables, "DT_BaseAttributableItem", "m_flFallbackWear");
 	offsets.DT_BaseAttributableItem.m_nFallbackStatTrak = NetVarManager::getOffset(tables, "DT_BaseAttributableItem", "m_nFallbackStatTrak");
 
-	offsets.DT_BaseViewModel.m_nModelIndex = NetVarManager::getOffset(tables, "DT_BaseViewModel", "m_nModelIndex");
 	offsets.DT_BaseViewModel.m_hWeapon = NetVarManager::getOffset(tables, "DT_BaseViewModel", "m_hWeapon");
 	offsets.DT_BaseViewModel.m_hOwner = NetVarManager::getOffset(tables, "DT_BaseViewModel", "m_hOwner");
 

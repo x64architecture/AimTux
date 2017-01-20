@@ -118,7 +118,7 @@ public:
 
 	int* GetModelIndex()
 	{
-		return (int*)((uintptr_t)this + offsets.DT_BaseViewModel.m_nModelIndex);
+		return (int*)((uintptr_t)this + offsets.DT_BaseEntity.m_nModelIndex);
 	}
 
 	int GetTeam()
