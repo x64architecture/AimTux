@@ -75,10 +75,10 @@ public:
 		return getvfunc<oGetClientClass>(this, 2)(this);
 	}
 
-	void PreDataUpdate(DataUpdateType_t updateType) // Could be wrong
+	void PreDataUpdate(DataUpdateType_t updateType)
 	{
 		typedef void (* oPreDataUpdate)(void*, DataUpdateType_t);
-		return getvfunc<oPreDataUpdate>(this, 6)(this, updateType);
+		return getvfunc<oPreDataUpdate>(this, 5)(this, updateType);
 	}
 
 	bool GetDormant()
@@ -110,7 +110,7 @@ class C_BaseEntity : public IClientEntity
 {
 public:
 
-	void SetModelIndex(int index)
+	void SetModelIndex(int index) // Dont think it's 78, I've tried down to 67 and up to 90, hasn't set for any of them. Could be something somewhere else going wrong.
 	{
 		typedef void (* oSetModelIndex)(void*, int);
 		return getvfunc<oSetModelIndex>(this, 78)(this, index);
@@ -301,7 +301,7 @@ public:
 		return (int*)((uintptr_t)this + offsets.DT_BaseCombatCharacter.m_hMyWeapons);
 	}
 
-	int * GetWearables()
+	int* GetWearables()
 	{
 		return (int*)((uintptr_t)this + offsets.DT_BaseCombatCharacter.m_hMyWearables);
 	}

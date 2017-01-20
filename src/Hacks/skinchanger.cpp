@@ -209,58 +209,56 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 		if (!wearables)
 			return;
 
-		if (entitylist->GetClientEntity(wearables[0] & 0xFFF)) // For some reason it rerturns here. I think FromHandle is needed tbh. I just can't figure this out.
+		if (entitylist->GetClientEntityFromHandle((void*)wearables)) // For some reason it rerturns here instantly when GetClientEntity. I think FromHandle is needed tbh. I just can't figure this out.
 			return;
 
-		static ClientClass* pClass;
-
-		if (!pClass)
-			pClass = client->GetAllClasses();
-		while (pClass)
+		for (ClientClass* pClass = client->GetAllClasses(); pClass; pClass = pClass->m_pNext)
 		{
-			if (pClass->m_ClassID == CEconWearable)
+			if (strcmp(pClass->m_pNetworkName, "CEconWearable") == 0)
+			{
+				int iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = RandomInt(0x0, 0xFFF);
+
+				pClass->m_pCreateFn(iEntry , iSerial);
+				wearables[0] = iEntry | (iSerial << 16);
+
+				C_BaseAttributableItem* gloves = (C_BaseAttributableItem*) entitylist->GetClientEntity(wearables[0] & 0xFFF);
+
+				IEngineClient::player_info_t localplayer_info;
+
+				if (gloves)
+				{
+					*gloves->GetItemDefinitionIndex() = 5033;
+					*gloves->GetItemIDHigh() = -1;
+					*gloves->GetEntityQuality() = 4;
+					*gloves->GetAccountID() = localplayer_info.xuidlow;
+					*gloves->GetFallbackWear() = 0.00000001f;
+					*gloves->GetFallbackSeed() = 0;
+					*gloves->GetFallbackStatTrak() = -1;
+					*gloves->GetFallbackPaintKit() = 10026;
+					int modIndex = modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl");
+					gloves->SetModelIndex(modIndex);
+					gloves->PreDataUpdate(DATA_UPDATE_CREATED);
+					// cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%i\n", *gloves->GetItemDefinitionIndex());
+					// cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%i\n", *gloves->GetItemIDHigh());
+					// cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%i\n", *gloves->GetEntityQuality());
+					// cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%i\n", *gloves->GetAccountID());
+					// cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%f\n", *gloves->GetFallbackWear());
+					// cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%i\n", *gloves->GetFallbackSeed());
+					// cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%i\n", *gloves->GetFallbackStatTrak());
+					// cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%i\n", *gloves->GetFallbackPaintKit());
+					cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%i\n", *gloves->GetModelIndex());
+				}
 				break;
-			pClass = pClass->m_pNext;
-		}
-
-		int iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = RandomInt(0x0, 0xFFF);
-
-		pClass->m_pCreateFn(iEntry , iSerial);
-		wearables[0] = iEntry | (iSerial << 16);
-
-		C_BaseEntity* gloves = entitylist->GetClientEntity(wearables[0] & 0xFFF);
-
-		IEngineClient::player_info_t localplayer_info;
-
-		if (gloves)
-		{
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemDefinitionIndex) = 5033;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iItemIDHigh) = -1;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iEntityQuality) = 4;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iAccountID) = localplayer_info.xuidlow;
-			*MakePtr(float*, gloves, offsets.DT_BaseAttributableItem.m_flFallbackWear) = 0.00000001f;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackSeed) = 0;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackStatTrak) = -1;
-			*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackPaintKit) = 10026;
-			// *gloves->GetItemDefinitionIndex() = 5033;
-			// *gloves->GetItemIDHigh() = -1;
-			// *gloves->GetEntityQuality() = 4;
-			// *gloves->GetAccountID() = localplayer_info.xuidlow;
-			// *gloves->GetFallbackWear() = 0.0005f;
-			// *gloves->GetFallbackSeed() = 0;
-			// *gloves->GetFallbackStatTrak() = -1;
-			// *gloves->GetFallbackPaintKit() = 10026;
-			gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
-			gloves->PreDataUpdate(DATA_UPDATE_CREATED);
+			}
 		}
 
 	}
 
-	if (SkinChanger::ForceFullUpdate)
-	{
-		::ForceFullUpdate(GetClientState());
-		SkinChanger::ForceFullUpdate = false;
-	}
+	// if (SkinChanger::ForceFullUpdate)
+	// {
+	// 	::ForceFullUpdate(GetClientState());
+	// 	SkinChanger::ForceFullUpdate = false;
+	// }
 }
 
 void SkinChanger::FireEventClientSide(IGameEvent* event)
