@@ -242,7 +242,7 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 		*MakePtr(float*, gloves, offsets.DT_BaseAttributableItem.m_flFallbackWear) = 0.00000001f; //outputing these values in console show they're correct inside the entity.
 		gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl")); //Doesn't seem to set the model. Almost certain at this point SetModelIndex is wrong, can't find real index value.
 		gloves->PreDataUpdate(DATA_UPDATE_CREATED); // This works, index 5 and 6 output the same "EconView" message in console, when changing index to 4 or 7, it doesn't. Therefore 5 = PRE, 6 = POST, we wan't pre.
-		cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "ModelIdex: %i\n", *gloves->GetModelIndex()); // Should print the entities modelIndex. Instead, it prints 0.
+		cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "ModelIndex: %i\n", *gloves->GetModelIndex()); // Should print the entities modelIndex. Instead, it prints 0.
 	}
 
 	if (SkinChanger::ForceFullUpdate)
