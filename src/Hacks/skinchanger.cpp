@@ -206,25 +206,24 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 
 		int* wearables = localplayer->GetWearables();
 
-		if(!wearables)
+		if (!wearables)
 			return;
 
 		static ClientClass* pClass;
 
-		if(entitylist->GetClientEntityFromHandle((void*)wearables))
+		if (entitylist->GetClientEntityFromHandle((void*)wearables)) //If wearables already exists, return.
 			return;
 
-		for (pClass = client->GetAllClasses(); pClass; pClass = pClass->m_pNext)
-			if (strcmp(pClass->m_pNetworkName, "CEconWearable") == 0)
+		for (pClass = client->GetAllClasses(); pClass; pClass = pClass->m_pNext) // Cycles through classes.
+			if (strcmp(pClass->m_pNetworkName, "CEconWearable") == 0) // Stops until the class is CEconWearable
 				break;
 
-		static int iEntry = (entitylist->GetHighestEntityIndex() + 1);
-		static int iSerial = RandomInt(0x0, 0xFFF);
+		cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Locked: %s\n", pClass->m_pNetworkName); // Should output CEconWearable
 
-		cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "%s\n", pClass->m_pNetworkName);
+		int iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = RandomInt(0x0, 0xFFF); // Random serial, gets entry to add entity
 
-		pClass->m_pCreateFn(iEntry, iSerial);
-		wearables[0] = (iEntry | (iSerial << 16));
+		pClass->m_pCreateFn(iEntry, iSerial); // Should? Create new entity.
+		wearables[0] = (iEntry | (iSerial << 16)); //Assigns first wearable to the created entity?
 
 		C_BaseEntity* gloves = entitylist->GetClientEntity(wearables[0] & 0xFFF);
 
@@ -240,9 +239,9 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 		*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_iAccountID) = localplayer_info.xuidlow;
 		*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackSeed) = 0;
 		*MakePtr(int*, gloves, offsets.DT_BaseAttributableItem.m_nFallbackStatTrak) = -1;
-		*MakePtr(float*, gloves, offsets.DT_BaseAttributableItem.m_flFallbackWear) = 0.00000001f;
-		gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
-		gloves->PreDataUpdate(DATA_UPDATE_CREATED);
+		*MakePtr(float*, gloves, offsets.DT_BaseAttributableItem.m_flFallbackWear) = 0.00000001f; //outputing these values in console show they're correct inside the entity.
+		gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl")); //Doesn't seem to set the model. Almost certain at this point SetModelIndex is wrong, can't find real offset.
+		gloves->PreDataUpdate(DATA_UPDATE_CREATED); // This works, index 5 and 6 output the same "EconView" message in console, when changing index to 4 or 7, it doesn't. Therefore 5 = PRE, 6 = POST, we wan't pre.
 		cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "ModelIdex: %i\n", *gloves->GetModelIndex());
 	}
 
