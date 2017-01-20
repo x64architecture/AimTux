@@ -110,7 +110,7 @@ class C_BaseEntity : public IClientEntity
 {
 public:
 
-	void SetModelIndex(int index) // Dont think it's 78, I've tried down to 67 and up to 90, hasn't set for any of them. Could be something somewhere else going wrong.
+	void SetModelIndex(int index) // 99.99% certain it's not 78. Unsure what it could be.
 	{
 		typedef void (* oSetModelIndex)(void*, int);
 		return getvfunc<oSetModelIndex>(this, 78)(this, index);
