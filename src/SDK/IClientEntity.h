@@ -81,6 +81,12 @@ public:
 		return getvfunc<oPreDataUpdate>(this, 5)(this, updateType);
 	}
 
+	void PostDataUpdate(DataUpdateType_t updateType)
+	{
+		typedef void (* oPreDataUpdate)(void*, DataUpdateType_t);
+		return getvfunc<oPreDataUpdate>(this, 6)(this, updateType);
+	}
+
 	bool GetDormant()
 	{
 		typedef bool (* oGetDormant)(void*);
@@ -110,10 +116,10 @@ class C_BaseEntity : public IClientEntity
 {
 public:
 
-	void SetModelIndex(int index) // 99.99% certain it's not 78. Unsure what it could be.
+	void SetModelIndex(int index)
 	{
 		typedef void (* oSetModelIndex)(void*, int);
-		return getvfunc<oSetModelIndex>(this, 78)(this, index);
+		return getvfunc<oSetModelIndex>(this, 111)(this, index);
 	}
 
 	int* GetModelIndex()
