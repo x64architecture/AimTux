@@ -218,10 +218,12 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 
 		cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Locked: %s\n", pClass->m_pNetworkName); // Should output CEconWearable
 
-		int iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = RandomInt(0x0, 0xFFF); // Random serial, gets entry to add entity
+		int iEntry, iSerial; // Random serial, gets entry to add entity
 
-		if (entitylist->GetClientEntity(wearables[0] & 0xFFF)) // If the entity doesn't exist. Create it.
+		if (!entitylist->GetClientEntity(wearables[0] & 0xFFF)) // If the entity doesn't exist. Create it.
 		{
+			iEntry = (entitylist->GetHighestEntityIndex() + 1);
+			iSerial = RandomInt(0x0, 0xFFF);
 			pClass->m_pCreateFn(iEntry, iSerial); // Should? Create new entity, this I don't think is working properly.
 			cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Entry: %i | Serial: %i\n", iEntry, iSerial);
 
