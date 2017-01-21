@@ -171,12 +171,12 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 					int iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = RandomInt(0x0, 0xFFF); // Gets last entityindex entry and just adds 1 | Random Serial.
 					pClass->m_pCreateFn(iEntry, iSerial);
 					localplayer->GetWearables()[0] = (iEntry | (iSerial << 16));
-					cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 255, 255), "Found Class ID: %s\n", pClass->m_pNetworkName);
+					cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 255, 255), "Found Class ID: %s\n", pClass->m_pNetworkName); // Ensures we have the correct Class ID
 					break;
 				}
 
-			C_BaseAttributableItem* gloves = (C_BaseAttributableItem*)entitylist->GetClientEntityFromHandle((void*)localplayer->GetWearables());
-			if(!gloves)
+			C_BaseAttributableItem* gloves = (C_BaseAttributableItem*)entitylist->GetClientEntity(localplayer->GetWearables()[0] & 0xFFF); //We can use this without FromHandle JUUUST to make sure we set the right wearable.
+			if(!gloves) // Redundancy
 				return;
 
 			IEngineClient::player_info_t localplayer_info;
@@ -190,13 +190,12 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 			*gloves->GetFallbackStatTrak() = -1;
 			*gloves->GetFallbackWear() = 0.0005f;
 			gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
-			cvar->ConsoleColorPrintf(ColorRGBA(150, 150, 255, 255), "Model Index: %i\n", *gloves->GetModelIndex());
 			gloves->PreDataUpdate(DATA_UPDATE_CREATED);
 
-			cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 150, 255), "Model Index should be: %i\n", modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
-			cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 150, 255), "Model Index actually is: %i\n", *gloves->GetModelIndex());
+			cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 150, 255), "Model Index should be: %i\n", modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl")); //Just to make sure we have the right SetModelIndex vfunc
+			cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 150, 255), "Model Index actually is: %i\n", *gloves->GetModelIndex()); //Just to make sure we have the right SetModelIndex vfunc
 
-			cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Successfully set Gloves with class: %s\n", entitylist->GetClientEntity(localplayer->GetWearables()[0] & 0xFFF)->GetClientClass()->m_pNetworkName);
+			cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Successfully set Gloves with class: %s\n", entitylist->GetClientEntity(localplayer->GetWearables()[0] & 0xFFF)->GetClientClass()->m_pNetworkName); //Check if the entity exists and what its class ID is.
 
 		}
 
