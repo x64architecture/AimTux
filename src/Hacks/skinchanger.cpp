@@ -181,6 +181,8 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 
 			IEngineClient::player_info_t localplayer_info;
 
+			engine->GetPlayerInfo(engine->GetLocalPlayer(), &localplayer_info);
+
 			*gloves->GetItemDefinitionIndex() = 5033;
 			*gloves->GetFallbackPaintKit() = 10026;
 			*gloves->GetEntityQuality() = 4;
@@ -188,8 +190,7 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 			*gloves->GetFallbackSeed() = 0;
 			*gloves->GetFallbackStatTrak() = -1;
 			*gloves->GetFallbackWear() = 0.0005f;
-			if (engine->GetPlayerInfo(engine->GetLocalPlayer(), &localplayer_info))
-				*gloves->GetAccountID() = localplayer_info.xuidlow;
+			*gloves->GetAccountID() = localplayer_info.xuidlow;
 			gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
 			gloves->GetNetworkable()->PreDataUpdate(DATA_UPDATE_CREATED);
 
