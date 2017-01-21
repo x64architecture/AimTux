@@ -78,7 +78,7 @@ public:
 	void PreDataUpdate(DataUpdateType_t updateType)
 	{
 		typedef void (* oPreDataUpdate)(void*, DataUpdateType_t);
-		return getvfunc<oPreDataUpdate>(this, 5)(this, updateType);
+		return getvfunc<oPreDataUpdate>(this, 6)(this, updateType);
 	}
 
 	bool GetDormant()
@@ -109,6 +109,11 @@ public:
 class C_BaseEntity : public IClientEntity
 {
 public:
+
+	IClientNetworkable* GetNetworkable()
+	{
+		return (IClientNetworkable*)((uintptr_t)this + 0x10);
+	}
 
 	void SetModelIndex(int index)
 	{

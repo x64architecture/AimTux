@@ -176,7 +176,7 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 				}
 
 			C_BaseAttributableItem* gloves = (C_BaseAttributableItem*)entitylist->GetClientEntity(localplayer->GetWearables()[0] & 0xFFF); //We can use this without FromHandle JUUUST to make sure we set the right wearable.
-			if(!gloves) // Redundancy
+			if (!gloves) // Redundancy
 				return;
 
 			IEngineClient::player_info_t localplayer_info;
@@ -190,7 +190,7 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 			*gloves->GetFallbackStatTrak() = -1;
 			*gloves->GetFallbackWear() = 0.0005f;
 			gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
-			gloves->PreDataUpdate(DATA_UPDATE_CREATED);
+			gloves->GetNetworkable()->PreDataUpdate(DATA_UPDATE_CREATED);
 
 			cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 150, 255), "Model Index should be: %i\n", modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl")); //Just to make sure we have the right SetModelIndex vfunc
 			cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 150, 255), "Model Index actually is: %i\n", *gloves->GetModelIndex()); //Just to make sure we have the right SetModelIndex vfunc
