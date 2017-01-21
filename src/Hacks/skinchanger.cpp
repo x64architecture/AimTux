@@ -206,21 +206,20 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 
 		static ClientClass* pClass;
 
-		if(wearables[0] != 0) //Somewhat of the same thing?
-			return;
-
-		for (int i = -1; i < 5; i++)
-			cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Before - Wearables[%i] = %i\n", i, wearables[i]); // Just to see if anything is actually assigned to the wearable
+		if(!entitylist->GetClientEntityFromHandle((void*)wearables))
+			for (int i = -1; i < 5; i++)
+				cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Before - Wearables[%i] = %i\n", i, wearables[i]); // Just to see if anything is actually assigned to the wearable
 
 		for (pClass = client->GetAllClasses(); pClass; pClass = pClass->m_pNext) // Cycles through classes.
 			if (strcmp(pClass->m_pNetworkName, "CEconWearable") == 0) // Stops until the class is CEconWearable
 				break;
 
-		cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Locked: %s\n", pClass->m_pNetworkName); // Should output CEconWearable
+		if(!entitylist->GetClientEntityFromHandle((void*)wearables))
+			cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Locked: %s\n", pClass->m_pNetworkName); // Should output CEconWearable
 
 		int iEntry, iSerial; // Random serial, gets entry to add entity
 
-		if (!entitylist->GetClientEntity(wearables[0] & 0xFFF)) // If the entity doesn't exist. Create it.
+		if(!entitylist->GetClientEntityFromHandle((void*)wearables))
 		{
 			iEntry = (entitylist->GetHighestEntityIndex() + 1);
 			iSerial = RandomInt(0x0, 0xFFF);
@@ -230,9 +229,10 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 			wearables[0] = (iEntry | (iSerial << 16)); //Assigns first wearable to the created entity?
 		}
 
-		cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Wearables[0] = %i\n", wearables[0]);
-
 		C_BaseAttributableItem* gloves = (C_BaseAttributableItem*)entitylist->GetClientEntity(wearables[0] & 0xFFF); // Using C_BaseAttributableItem should be all the same. Offsets are the same as C_BaseWearableItem
+
+		if(entitylist->GetClientEntityFromHandle((void*)wearables))
+			cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "Wearables[0] = %i | gloves = %i\n", wearables[0], gloves);
 
 		if(!gloves) // If somehow something fucks up, then just return;
 			return;
@@ -248,18 +248,21 @@ void SkinChanger::FrameStageNotifyWearables(ClientFrameStage_t stage)
 		*gloves->GetFallbackStatTrak() = -1;
 		*gloves->GetFallbackWear() = 0.0005f;
 		gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
-		gloves->PreDataUpdate(DATA_UPDATE_CREATED);
-		cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "ModelIndex: %i\n", *gloves->GetModelIndex());
+	//	gloves->PreDataUpdate(DATA_UPDATE_CREATED);
 
-		for (int i = -1; i < 5; i++)
-			cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "After - Wearables[%i] = %i\n", i, wearables[i]); // Just to see if anything is actually assigned to the wearable
+		if(entitylist->GetClientEntityFromHandle((void*)wearables))
+			cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "ModelIndex: %i\n", *gloves->GetModelIndex());
+
+		if(entitylist->GetClientEntityFromHandle((void*)wearables))
+			for (int i = -1; i < 5; i++)
+				cvar->ConsoleColorPrintf(ColorRGBA(150, 255, 150, 255), "After - Wearables[%i] = %i\n", i, wearables[i]); // Just to see if anything is actually assigned to the wearable
 	}
 
-	// if (SkinChanger::ForceFullUpdate)
-	// {
-	// 	::ForceFullUpdate(GetClientState());
-	// 	SkinChanger::ForceFullUpdate = false;
-	// }
+	if (SkinChanger::ForceFullUpdate)
+	{
+		::ForceFullUpdate(GetClientState());
+		SkinChanger::ForceFullUpdate = false;
+	}
 }
 
 void SkinChanger::FireEventClientSide(IGameEvent* event)

@@ -1,6 +1,7 @@
 #pragma once
 
 struct RecvProp;
+struct IClientNetworkable;
 
 struct DVariant
 {
@@ -56,7 +57,7 @@ struct RecvProp
 	const char *m_pParentArrayPropName;
 };
 
-typedef void*	(*CreateClientClassFn)( int entnum, int serialNum );
+typedef IClientNetworkable*	(*CreateClientClassFn)( int entnum, int serialNum );
 
 struct ClientClass
 {

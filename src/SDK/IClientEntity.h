@@ -81,12 +81,6 @@ public:
 		return getvfunc<oPreDataUpdate>(this, 5)(this, updateType);
 	}
 
-	void PostDataUpdate(DataUpdateType_t updateType)
-	{
-		typedef void (* oPreDataUpdate)(void*, DataUpdateType_t);
-		return getvfunc<oPreDataUpdate>(this, 6)(this, updateType);
-	}
-
 	bool GetDormant()
 	{
 		typedef bool (* oGetDormant)(void*);
