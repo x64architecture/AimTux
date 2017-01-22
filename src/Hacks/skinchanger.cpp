@@ -169,10 +169,10 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 				if (pClass->m_ClassID == CEconWearable) // Stops until the class is CEconWearable
 				{
 					int iEntry = (entitylist->GetHighestEntityIndex() + 1), iSerial = RandomInt(0x0, 0xFFF); // Gets last entityindex entry and just adds 1 | Random Serial.
-					pClass->m_pCreateFn(iEntry, iSerial);
-					localplayer->GetWearables()[0] = (iEntry | (iSerial << 16));
-					cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 255, 255), "Found Class ID: %s\n", pClass->m_pNetworkName); // Ensures we have the correct Class ID
-					break;
+					pClass->m_pCreateFn(iEntry, iSerial); // Creates the entity, adds it to the enum of Entities.
+					localplayer->GetWearables()[0] = iEntry | (iSerial << 16); // Assigns Wearable[0] (gloves) with the entry value and serial.
+					cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 255, 255), "Found Class ID: %s\n", entitylist->GetClientEntityFromHandle((void*)localplayer->GetWearables())->GetClientClass()->m_pNetworkName); // Ensures we have the correct Class ID
+					break; // Exit for loop, as we've created our entity.
 				}
 
 			C_BaseAttributableItem* gloves = (C_BaseAttributableItem*)entitylist->GetClientEntity(localplayer->GetWearables()[0] & 0xFFF); //We can use this without FromHandle JUUUST to make sure we set the right wearable.
@@ -180,10 +180,9 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 				return;
 
 			IEngineClient::player_info_t localplayer_info;
-
 			engine->GetPlayerInfo(engine->GetLocalPlayer(), &localplayer_info);
 
-			*gloves->GetItemDefinitionIndex() = 5033;
+			*gloves->GetItemDefinitionIndex() = 5033; //Start assigning pointer values to our entity.
 			*gloves->GetFallbackPaintKit() = 10026;
 			*gloves->GetEntityQuality() = 4;
 			*gloves->GetItemIDHigh() = -1;
@@ -191,9 +190,10 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 			*gloves->GetFallbackStatTrak() = -1;
 			*gloves->GetFallbackWear() = 0.0005f;
 			*gloves->GetAccountID() = localplayer_info.xuidlow;
-			gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl"));
-			gloves->GetNetworkable()->PreDataUpdate(DATA_UPDATE_CREATED);
+			gloves->SetModelIndex(modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl")); // Set the model.
+			gloves->GetNetworkable()->PreDataUpdate(DATA_UPDATE_CREATED); // Tell the game that we've created everything.
 
+			cvar->ConsoleColorPrintf(ColorRGBA(150, 150, 255, 255), "XUID: %i\n", localplayer_info.xuidlow);
 			cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 150, 255), "Model Index should be: %i\n", modelInfo->GetModelIndex("models/weapons/v_models/arms/glove_motorcycle/v_glove_motorcycle.mdl")); //Just to make sure we have the right SetModelIndex vfunc
 			cvar->ConsoleColorPrintf(ColorRGBA(255, 255, 150, 255), "Model Index actually is: %i\n", *gloves->GetModelIndex()); //Just to make sure we have the right SetModelIndex vfunc
 
@@ -220,11 +220,11 @@ void SkinChanger::FrameStageNotify(ClientFrameStage_t stage)
 			*viewmodel->GetModelIndex() = modelInfo->GetModelIndex(currentSkin.Model.c_str());
 	}
 
-	if (SkinChanger::ForceFullUpdate)
-	{
-		::ForceFullUpdate(GetClientState());
-		SkinChanger::ForceFullUpdate = false;
-	}
+	// if (SkinChanger::ForceFullUpdate)
+	// {
+	// 	::ForceFullUpdate(GetClientState());
+	// 	SkinChanger::ForceFullUpdate = false;
+	// }
 
 }
 
@@ -365,7 +365,7 @@ void SkinChanger::HookCBaseViewModel()
 {
 	for (ClientClass* pClass = client->GetAllClasses(); pClass; pClass = pClass->m_pNext)
 	{
-		if (strcmp(pClass->m_pNetworkName, "CBaseViewModel") == 0)
+		if(pClass->m_ClassID == CBaseViewModel)
 		{
 			// Search for the 'm_nModelIndex' property.
 			RecvTable* pClassTable = pClass->m_pRecvTable;
@@ -395,7 +395,7 @@ void SkinChanger::UnhookCBaseViewModel()
 {
 	for (ClientClass* pClass = client->GetAllClasses(); pClass; pClass = pClass->m_pNext)
 	{
-		if (strcmp(pClass->m_pNetworkName, "CBaseViewModel") == 0)
+		if(pClass->m_ClassID == CBaseViewModel)
 		{
 			// Search for the 'm_nModelIndex' property.
 			RecvTable* pClassTable = pClass->m_pRecvTable;

@@ -14,6 +14,7 @@
 #include "CEffects.h"
 #include "CGlobalVars.h"
 #include "IAppSystem.h"
+#include "IClientNetworkable.h"
 #include "IBaseClientDLL.h"
 #include "IInputSystem.h"
 #include "IMaterial.h"
