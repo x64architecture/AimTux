@@ -582,6 +582,7 @@ namespace Settings
 	{
 		extern bool enabled;
 		extern int type;
+		extern bool silent;
 	}
 
 	namespace Noflash
@@ -771,6 +772,12 @@ namespace Settings
 	{
 		extern bool enabled;
 		extern ButtonCode_t key;
+	}
+
+	namespace NameStealer
+	{
+		extern bool enabled;
+		extern int team;
 	}
 
 	void LoadDefaultsOrSave(std::string path);
