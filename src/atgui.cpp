@@ -462,17 +462,14 @@ void AimbotTab()
 				if (!isDefault && !Util::Contains(Util::ToLower(std::string(filterWeapons)), Util::ToLower(std::string(it.second))))
 					continue;
 
-				const bool item_selected = (it.first == (int)  current_weapon);
+				const bool item_selected = (it.first == (int) current_weapon);
 				ImGui::PushID(it.first);
 
-					std::string formattedName;
-					char changeIndicator = ' ';
+					std::stringstream formattedName;
 					bool isChanged = Settings::Aimbot::weapons.find((ItemDefinitionIndex) it.first) != Settings::Aimbot::weapons.end();
-					if (!isDefault && isChanged)
-						changeIndicator = '*';
-					formattedName = changeIndicator + std::string(it.second);
+					formattedName << ((!isDefault && isChanged) ? '*' : ' ') << ' ' << it.second;
 
-					if (ImGui::Selectable(formattedName.c_str(), item_selected))
+					if (ImGui::Selectable(formattedName.str().c_str(), item_selected))
 					{
 						current_weapon = (ItemDefinitionIndex ) it.first;
 
